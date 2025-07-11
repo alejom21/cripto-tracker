@@ -37,9 +37,33 @@ const Img = styled.img`
   height: 32px;
 `;
 
+const CoinInfo = styled.div`
+  display: flex;
+  align-items: center;
+`
+
+const FollowButton = styled.button`
+  background-color: #00ffff;
+    border: none;
+  color: #000;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+
+  &:hover {
+    background-color: #00cccc;
+  }
+`;
+
+const FollowedList = styled.div`
+    margin-top: 2rem;
+`;
+
 export default function SearchBar() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
+  const [followedCoins, setFollowedCoins] = useState([]);
 
   const searchCoins = async (e) => {
     const value = e.target.value;
@@ -58,6 +82,13 @@ export default function SearchBar() {
     }
   };
 
+  const followCoin = (coin) => {
+    const alreadyFollowed = followedCoins.some((c) => c.id === coin.id);
+    if (!alreadyFollowed) {
+      setFollowedCoins([...followedCoins, coin]);
+    }
+  };
+
   return (
     <Container>
       <Input
@@ -66,16 +97,36 @@ export default function SearchBar() {
         value={query}
         onChange={searchCoins}
       />
+
       {results.length > 0 && (
         <Result>
           {results.map((coin) => (
             <Coin key={coin.id}>
-              <Img src={coin.thumb} alt={coin.name} />
-              <span>{coin.name} ({coin.symbol.toUpperCase()})</span>
+                <CoinInfo>
+                    <Img src={coin.thumb} alt={coin.name} />
+                    <span>{coin.name} ({coin.symbol.toUpperCase()})</span>            
+                </CoinInfo>
+                <FollowButton onClick={() => followCoin(coin)}>
+                  Seguir
+                </FollowButton>
             </Coin>
           ))}
         </Result>
       )}
+
+        {followedCoins.length > 0 && (
+            <FollowedList>
+            <h3>Criptomonedas seguidas:</h3>
+            {followedCoins.map((coin) => (
+                <Coin key={coin.id}>
+                <CoinInfo>
+                    <Img src={coin.thumb} alt={coin.name} />
+                    <span>{coin.name} ({coin.symbol.toUpperCase()})</span>
+                </CoinInfo>
+                </Coin>
+            ))}
+            </FollowedList>
+        )}
     </Container>
   );
 }
