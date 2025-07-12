@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 
@@ -60,10 +60,16 @@ const FollowedList = styled.div`
     margin-top: 2rem;
 `;
 
+const Price = styled.span`
+  font-weight: bold;
+  color: #00ff00;
+`;
+
 export default function SearchBar() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [followedCoins, setFollowedCoins] = useState([]);
+  const [prices, setPrices] = useState({});
 
   const searchCoins = async (e) => {
     const value = e.target.value;
@@ -88,6 +94,24 @@ export default function SearchBar() {
       setFollowedCoins([...followedCoins, coin]);
     }
   };
+
+  const fetchPrices = async () => {
+    if (followedCoins.length === 0) return;
+
+    const ids = followedCoins.map((coin) => coin.id).join(',');
+    try {
+      const res = await axios.get(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`
+      );
+      setPrices(res.data);
+    } catch (err) {
+      console.error('Error al obtener precios:', err.message || err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPrices();
+  }, [followedCoins]);
 
   return (
     <Container>
@@ -115,17 +139,23 @@ export default function SearchBar() {
       )}
 
         {followedCoins.length > 0 && (
-            <FollowedList>
+          <FollowedList>
             <h3>Criptomonedas seguidas:</h3>
-            {followedCoins.map((coin) => (
-                <Coin key={coin.id}>
-                <CoinInfo>
-                    <Img src={coin.thumb} alt={coin.name} />
-                    <span>{coin.name} ({coin.symbol.toUpperCase()})</span>
-                </CoinInfo>
-                </Coin>
-            ))}
-            </FollowedList>
+            <ul>
+              {followedCoins.map((coin) => (
+                <li key={coin.id}>
+                  {coin.name} ({coin.symbol.toUpperCase()}) - 
+                  <Price> ${prices[coin.id]?.usd || 'Cargando...'}</Price>
+                  {/* <Coin key={coin.id}>
+                    <CoinInfo>
+                      <Img src={coin.thumb} alt={coin.name} />
+                      <span>{coin.name} ({coin.symbol.toUpperCase()})</span>
+                    </CoinInfo>
+                  </Coin> */}
+                </li>                
+              ))}
+            </ul>            
+          </FollowedList>
         )}
     </Container>
   );
