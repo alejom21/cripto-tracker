@@ -70,6 +70,7 @@ export default function SearchBar() {
   const [results, setResults] = useState([]);
   const [followedCoins, setFollowedCoins] = useState([]);
   const [prices, setPrices] = useState({});
+  const [alerts, setAlerts] = useState([]);
 
   const searchCoins = async (e) => {
     const value = e.target.value;
@@ -103,9 +104,23 @@ export default function SearchBar() {
     const ids = followedCoins.map((coin) => coin.id).join(',');
     try {
       const res = await axios.get(
-        `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`
+        `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`
       );
+      const data = res.data;
       setPrices(res.data);
+
+      //Alertas por cambios de precio mayores al 5%
+      const newAlerts = [];
+      followedCoins.forEach((coin) => {
+        const change = data[coin.id]?.usd_24h_change;
+        if (change >= 5) {
+          newAlerts.push(`${coin.name} subió +${change.toFixed(2)}% en 24h 🚀`);
+        } else if (change <= -5) {
+          newAlerts.push(`${coin.name} bajó ${change.toFixed(2)}% en 24h 📉`);
+        }
+      });
+
+      setAlerts(newAlerts);
     } catch (err) {
       console.error('Error al obtener precios:', err.message || err);
     }
@@ -165,28 +180,41 @@ export default function SearchBar() {
         </Result>
       )}
 
-        {followedCoins.length > 0 && (
-          <FollowedList>
-            <h3>Criptomonedas seguidas:</h3>
-            <ul>
-              {followedCoins.map((coin) => (
-                <li key={coin.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <span>
-                    {coin.name} ({coin.symbol.toUpperCase()}) - 
-                    <Price> ${prices[coin.id]?.usd || 'Cargando...'}</Price>
-                  </span>
-                  <button
-                    onClick={() => unfollowcoin(coin.id)}
-                    style={{ background: 'red', color: 'white', border: 'none', padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer' }}
-                  >
-                    Dejar de seguir
-                  </button>
-                  
-                </li>                
-              ))}
-            </ul>            
-          </FollowedList>
-        )}
+      {followedCoins.length > 0 && (
+        <FollowedList>
+          <h3>Criptomonedas seguidas:</h3>
+          <ul>
+            {followedCoins.map((coin) => (
+              <li key={coin.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <span>
+                  {coin.name} ({coin.symbol.toUpperCase()}) - 
+                  <Price> ${prices[coin.id]?.usd || 'Cargando...'}</Price>
+                </span>
+                <button
+                  onClick={() => unfollowcoin(coin.id)}
+                  style={{ background: 'red', color: 'white', border: 'none', padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer' }}
+                >
+                  Dejar de seguir
+                </button>
+                
+              </li>                
+            ))}
+          </ul>            
+        </FollowedList>
+      )}
+
+      {alerts.length > 0 && (
+        <div style={{ marginTop: '2rem' }}>
+          <h4>⚠️ Alertas de variación:</h4>
+          <ul>
+            {alerts.map((alert, index) => (
+              <li key={index} style={{ color: '#FFD700', fontWeight: 'bold' }}>
+                {alert}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </Container>
   );
 }
