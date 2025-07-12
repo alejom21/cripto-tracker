@@ -90,9 +90,11 @@ export default function SearchBar() {
 
   const followCoin = (coin) => {
     const alreadyFollowed = followedCoins.some((c) => c.id === coin.id);
-    if (!alreadyFollowed) {
-      setFollowedCoins([...followedCoins, coin]);
-    }
+      if (!alreadyFollowed) {
+        const updated = [...followedCoins, coin];
+        setFollowedCoins(updated);
+        localStorage.setItem('followedCoins', JSON.stringify(updated));
+      }
   };
 
   const fetchPrices = async () => {
@@ -109,9 +111,34 @@ export default function SearchBar() {
     }
   };
 
+  const unfollowcoin = (id) => {
+    const updated = followedCoins.filter((coin) => coin.id !== id);
+    setFollowedCoins(updated);
+    localStorage.setItem('followedCoins', JSON.stringify(updated));
+  };
+
   useEffect(() => {
-    fetchPrices();
+    if (followedCoins.length > 0) {
+      fetchPrices();
+    }
   }, [followedCoins]);
+
+  useEffect(() => {
+    if (followedCoins.length === 0) return;
+
+    const interval = setInterval(() => {
+      fetchPrices();
+    }, 45000);
+
+    return () => clearInterval(interval);
+  }, [followedCoins.length]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('followedCoins');
+    if (stored) {
+      setFollowedCoins(JSON.parse(stored));
+    }
+  }, []);
 
   return (
     <Container>
@@ -143,15 +170,18 @@ export default function SearchBar() {
             <h3>Criptomonedas seguidas:</h3>
             <ul>
               {followedCoins.map((coin) => (
-                <li key={coin.id}>
-                  {coin.name} ({coin.symbol.toUpperCase()}) - 
-                  <Price> ${prices[coin.id]?.usd || 'Cargando...'}</Price>
-                  {/* <Coin key={coin.id}>
-                    <CoinInfo>
-                      <Img src={coin.thumb} alt={coin.name} />
-                      <span>{coin.name} ({coin.symbol.toUpperCase()})</span>
-                    </CoinInfo>
-                  </Coin> */}
+                <li key={coin.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <span>
+                    {coin.name} ({coin.symbol.toUpperCase()}) - 
+                    <Price> ${prices[coin.id]?.usd || 'Cargando...'}</Price>
+                  </span>
+                  <button
+                    onClick={() => unfollowcoin(coin.id)}
+                    style={{ background: 'red', color: 'white', border: 'none', padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer' }}
+                  >
+                    Dejar de seguir
+                  </button>
+                  
                 </li>                
               ))}
             </ul>            
