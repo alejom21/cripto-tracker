@@ -2,39 +2,63 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import PriceChart from './PriceChart';
+
 
 const Container = styled.div`
+  justify-content: center;
+  display: block;
   padding: 2rem;
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
+  color: white;
+  font-family: 'Geist', sans-serif;
 `;
+
+/* const Title = styled.h1`
+  font-size: 2rem;
+  color: #00ffff;
+  margin-bottom: 1.5rem;
+  text-align: center;
+`; */
 
 const Input = styled.input`
   width: 100%;
   padding: 1rem;
   font-size: 1rem;
-  border: none;
+  border: 1px solid #444;
   border-radius: 8px;
+  color: black;
+  background-color: #f0f0f0;
   outline: none;
+
+  &:focus {
+    border-color: #00ffff;
+  }
 `;
 
 const Result = styled.div`
   margin-top: 1rem;
-  background: #1e1e1e;
+  /*background: #1e1e1e;
   border-radius: 8px;
-  padding: 1rem;
+  padding: 1rem;*/
 `;
 
 const Coin = styled.div`
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  padding: 0.5rem 0;
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  gap: 20px;
 `;
 
 const Img = styled.img`
   width: 32px;
   height: 32px;
+  margin-right: 0.75rem;
 `;
 
 const CoinInfo = styled.div`
@@ -44,12 +68,27 @@ const CoinInfo = styled.div`
 
 const FollowButton = styled.button`
   background-color: #00ffff;
-    border: none;
+  border: none;
   color: #000;
   padding: 0.4rem 0.8rem;
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #00cccc;
+  }
+`;
+
+const DeleteButton = styled.button`
+  background-color: #00ffff;
+  border: none;
+  color: #000;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  cursor: pointer;
 
   &:hover {
     background-color: #00cccc;
@@ -57,12 +96,34 @@ const FollowButton = styled.button`
 `;
 
 const FollowedList = styled.div`
-    margin-top: 2rem;
+  margin-top: 2rem;
+  h3 {
+    color: #9c4444ff;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+  }
 `;
 
 const Price = styled.span`
   font-weight: bold;
   color: #00ff00;
+`;
+
+const AlertBox = styled.li`
+  background-color: #1e1e1e;
+  border-left: 5px solid ${(props) => (props.positive ? '#00e676' : '#ff1744')};
+  padding: 1rem;
+  margin: 0.5rem 0;
+  border-radius: 8px;
+  font-weight: bold;
+`;
+
+const AlertH4 = styled.div`
+  color: #ff4c4c; 
+  margin: 20px;
+  display: flex;
+  justify-content: center;
 `;
 
 export default function SearchBar() {
@@ -159,7 +220,7 @@ export default function SearchBar() {
     <Container>
       <Input
         type="text"
-        placeholder="Buscar criptomoneda (ej: bitcoin)"
+        placeholder="Buscar criptomoneda... (2 caracteres mínimo)"
         value={query}
         onChange={searchCoins}
       />
@@ -183,36 +244,37 @@ export default function SearchBar() {
       {followedCoins.length > 0 && (
         <FollowedList>
           <h3>Criptomonedas seguidas:</h3>
-          <ul>
-            {followedCoins.map((coin) => (
-              <li key={coin.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+          
+          {followedCoins.map((coin) => (            
+            <Coin key={coin.id}>
+              <CoinInfo>
+                <img src={coin.thumb} alt={coin.name} />
                 <span>
                   {coin.name} ({coin.symbol.toUpperCase()}) - 
                   <Price> ${prices[coin.id]?.usd || 'Cargando...'}</Price>
                 </span>
-                <button
-                  onClick={() => unfollowcoin(coin.id)}
-                  style={{ background: 'red', color: 'white', border: 'none', padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer' }}
+             </CoinInfo>
+              <PriceChart coinId={coin.id} />
+              <DeleteButton 
+                onClick={() => unfollowcoin(coin.id)}
                 >
-                  Dejar de seguir
-                </button>
-                
-              </li>                
-            ))}
-          </ul>            
+                Dejar de seguir
+              </DeleteButton>              
+            </Coin>                
+          ))}          
         </FollowedList>
       )}
 
       {alerts.length > 0 && (
-        <div style={{ marginTop: '2rem' }}>
-          <h4>⚠️ Alertas de variación:</h4>
-          <ul>
-            {alerts.map((alert, index) => (
-              <li key={index} style={{ color: '#FFD700', fontWeight: 'bold' }}>
-                {alert}
-              </li>
-            ))}
-          </ul>
+        <div>
+          <AlertH4>
+            <h4 >⚠️ Alertas de variación:</h4>
+          </AlertH4>
+          {alerts.map((alert, i) => (
+            <AlertBox key={i} positive={alert.positive}>
+              {alert.message || alert}
+            </AlertBox>
+          ))}
         </div>
       )}
     </Container>

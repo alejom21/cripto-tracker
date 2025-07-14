@@ -6,9 +6,10 @@ const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #121212;
-    color: #ffffff;
+    justify-items: center;
+    font-family: sans-serif;
+    /* background-color: #121212; */
+    /* color: #ffffff; */
   }
 
   * {
