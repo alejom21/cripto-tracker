@@ -21,7 +21,11 @@ Esta aplicación fue desarrollada como solución al desafio Crypto Tracker.
 ![Monedas seguidas](./Screenshots/CriptoSeguidas.PNG)
 
 ## Alertas visuales:
-![Alertas + gráfico](./Screenshots/Alertas.PNG)
+![Alertas](./Screenshots/Alertas.PNG)
+
+## Imagenes en produccion
+![Imagen en produccion](./Screenshots/Captura_Produccion.PNG)
+![Imagen en produccion](./Screenshots/Captura_Produccion2.PNG)
 
 ## Como ejecutar el proyecto localmente
 
@@ -43,7 +47,7 @@ Accede a http://localhost:3000
 
 ## Hosting del proyecto
 El proyecto está desplegado en Vercel
-
+https://cripto-tracker-two.vercel.app/
 
 ## Estructura del proyecto
 
