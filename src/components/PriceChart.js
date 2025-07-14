@@ -42,7 +42,7 @@ export default function PriceChart({ coinId }) {
   }, [coinId]);
 
   useEffect(() => {
-  const delay = Math.random() * 1000 + 500; // entre 500ms y 1500ms
+  const delay = Math.random() * 1000 + 500; 
   const timeout = setTimeout(() => {
     fetchChart();
   }, delay);

@@ -2,8 +2,7 @@
 import styled from "styled-components";
 
 const Wrapper = styled.header`
-  padding: 2rem;/* 
-  background-color: #1e1e1e; */
+  padding: 2rem;
   text-align: center;
 `;
 

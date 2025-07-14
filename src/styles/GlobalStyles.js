@@ -8,8 +8,6 @@ const GlobalStyle = createGlobalStyle`
     padding: 0;
     justify-items: center;
     font-family: sans-serif;
-    /* background-color: #121212; */
-    /* color: #ffffff; */
   }
 
   * {

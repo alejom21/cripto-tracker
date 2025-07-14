@@ -15,13 +15,6 @@ const Container = styled.div`
   font-family: 'Geist', sans-serif;
 `;
 
-/* const Title = styled.h1`
-  font-size: 2rem;
-  color: #00ffff;
-  margin-bottom: 1.5rem;
-  text-align: center;
-`; */
-
 const Input = styled.input`
   width: 100%;
   padding: 1rem;
@@ -39,9 +32,6 @@ const Input = styled.input`
 
 const Result = styled.div`
   margin-top: 1rem;
-  /*background: #1e1e1e;
-  border-radius: 8px;
-  padding: 1rem;*/
 `;
 
 const Coin = styled.div`
@@ -82,6 +72,7 @@ const FollowButton = styled.button`
 `;
 
 const DeleteButton = styled.button`
+  width: 100%;
   background-color: #00ffff;
   border: none;
   color: #000;
